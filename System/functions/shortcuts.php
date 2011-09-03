@@ -75,8 +75,8 @@ function api_response($args, $tpl = null)
     if($tpl === null)
     {
         $dbg = debug_backtrace();
-        dump($dbg);
-        return new ApiResponse(render_to_response_str($dbg[1]['function'].'.xml', array_merge(array('IsError' => 0) ,$args)));
+        #dump($dbg);
+        return new ApiResponse(render_to_response_str('func_'.$dbg[1]['function'].'.xml', array_merge(array('IsError' => 0) ,$args)));
     }
     else
     {
@@ -119,7 +119,8 @@ function toXml($what)
     $w->setIndent(true);
     if(is_object($what))
     {
-        $w->startElement(get_class($what));
+        $w->startElement("Object");
+        $w->writeAttribute("ClassName", get_class($what));
         $fields = get_object_vars($what);
         foreach($fields as $k => $v)
         {
