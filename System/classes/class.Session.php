@@ -69,6 +69,11 @@ class Session
     
     public function CheckSession()
     {
+//        if( ! array_key_exists('lastVisit', $this->session) || ! $this->session['lastVisit'] || $this->session['lastVisit'] + self::$session_lifetime < time() )
+//        {
+//            $this->Logout();
+//            return false;
+//        }
         if(isset($this->session['account']))
         {
             $this->session['lastVisit'] = time();

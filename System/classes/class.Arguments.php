@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * Description of classhttprequest
+ *
+ * @author nolka4
+ */
 class Arguments {
 
     public static function Get($keyname)

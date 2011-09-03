@@ -11,22 +11,33 @@ class Request
     
     private $pathSeparator = '/';
     
-    public function __construct()
+    public function __construct($method, $path, $callback)
     {
-        if(func_num_args() == 3)
+        $reqMethod = $method;
+        $this->Method = $reqMethod;
+        $this->Path = $path;
+        #dump($reqMethod.' -> '.$this->Path);
+        $this->Callback = $callback;
+        $this->data = Arguments::Request();
+                
+        if($this->Method == "ALL")
         {
-            $this->Method = func_get_arg(0);
-            $this->Path = func_get_arg(1);
-            $this->Callback = func_get_arg(2);
+            $this->Method = "GET";
+            Application::GetInstance()->Requests[$this->Method][] = clone $this;
+            $this->Method = "POST";
+            Application::GetInstance()->Requests[$this->Method][] = clone $this;
+            $this->Method = "PUT";
+            Application::GetInstance()->Requests[$this->Method][] = clone $this;
+            $this->Method = "DELETE";
+            Application::GetInstance()->Requests[$this->Method][] = clone $this;
+            $this->Method = "AJAX";
+            Application::GetInstance()->Requests[$this->Method][] = clone $this;
         }
         else
         {
-            $this->Method = "";
-            $this->Path = func_get_arg(0);
-            $this->Callback = func_get_arg(1);
+            $this->Method = $reqMethod;
+            Application::GetInstance()->Requests[$this->Method][] = $this;
         }
-        $this->data = Arguments::Request();
-        Application::GetInstance()->Requests[$this->Method][] = $this;
     }
     
     public function Filter($name, $filter)
@@ -58,7 +69,6 @@ class Request
     public function Run()
     {
         $args = array();
-        
         
         if ($this->Method != '' && $_SERVER['REQUEST_METHOD'] != $this->Method) 
             return false;
@@ -100,7 +110,7 @@ class Request
                     unset($argData);
                 }
                 
-                if(count($this->Filters) > 0 && $this->Filters[$argName] !== null)
+                if(count($this->Filters) > 0 && isset($this->Filters[$argName]) && $this->Filters[$argName] !== null)
                 {
                         $filter = $this->Filters[$argName];
                         //echo "+++ '$var' => '$argName'<br />";
@@ -138,7 +148,14 @@ class Request
                     $args[$argName] = $argVal;
                 }
             }
-            else 
+            // если квадратные скобки, то обрабатывать этот URL будет объект класса,
+            // имя которого в скобках. Обрабатывать будет тот метод, что идет следом за
+            // именем класса. Следом за методом передаются параметры, предназначенные для метода
+//            else if(preg_match('/^\[(.*)\]$/', $pathParts[$i], $match)) 
+//            {
+//                
+//            }
+            else
             {
                 if ($urlParts[$i] != $pathParts[$i])
                     return false;

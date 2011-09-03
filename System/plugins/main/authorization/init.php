@@ -13,7 +13,7 @@ foreach(glob(__DIR__."/handlers/*.php") as $handler)
     require_once $handler;
 }
 
-function login($req, $api, $login, $password)
+function login($req, $login, $password, $apiId, $sign)
 {
     $af = new AccountManager();
     $acc = $af->Login($login, $password);
@@ -26,7 +26,7 @@ function login($req, $api, $login, $password)
     }
 }
 
-function getAccount($req, $api, $hash)
+function getAccount($req, $hash, $apiId, $sign)
 {
     $af = new AccountManager();
     $db = SystemConfig::GetDatabaseInstance();
@@ -42,7 +42,7 @@ function getAccount($req, $api, $hash)
     }
 }
 
-function logout($req, $api, $hash)
+function logout($req, $hash, $apiId, $sign)
 {
     $af = new AccountManager();
     $result = $af->Logout($hash);
@@ -57,21 +57,11 @@ function logout($req, $api, $hash)
 }
 
 $app = Application::GetInstance();
-$app->Get('{api}/login/{login:str}/{password:str}', 'login');
-$app->Get('{api}/getObject/account/{hash:str}', 'getAccount');
-$app->Get('{api}/getObject/account/{hash:str}', 'getAccount');
-$app->Get('{api}/logout/{hash:str}', 'logout');
+$app->Get('login/{login:str}/{password:str}', 'login');
+$app->Get('getObject/account/{hash:str}', 'getAccount');
+$app->Get('logout/{hash:str}', 'logout');
+$app->AppendPath('/{apiId:int}/{hash}', 3);
 
-#dump(Application::GetInstance());
-//Application::GetInstance()->Get('cpl/{varname}', function($req)
-//{
-//     echo 'control panel here';
-//})->Filter('varname', '/[\d]\.[\d]$/');
-//
-//
-//Application::GetInstance()->Get('cpl/{var1}/{var2}/{var3}/', function($req)
-//{
-//     return new Response("All zaebiss!");
-//})->Filter('var1', 'float')->Filter('var2', 'int')->Filter('var3', 'float');
+#dump($app->Requests["GET"]);
 
 ?>

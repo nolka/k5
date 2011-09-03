@@ -1,9 +1,11 @@
 <?php
 
+//hi
+
 $include_pathes = array(
-    '/var/www/auth/System/classes/',
-    'auth/System/classes/',
-    '../auth/System/classes/');
+    '/var/www/userbars/system/classes/',
+    'userbars/system/classes/',
+    '..userbars/system/classes/');
 
 class Autoloader
 {
@@ -15,7 +17,6 @@ class Autoloader
             {
                 $path .= '/';
             }
-            #echo "{$path}{$filename}<br />";
             if (file_exists("{$path}{$filename}"))
             {
                 return true;
@@ -26,7 +27,6 @@ class Autoloader
     
     public static function Load($class_name)
     {
-        #echo 'try to load '.$class_name.'<br />';
         if(self::FileExists('class.'.$class_name.'.php'))
         {
             include_once('class.'.$class_name.'.php');
@@ -34,9 +34,9 @@ class Autoloader
         
         if(class_exists($class_name) || interface_exists($class_name))
         {
-            if(method_exists($class_name, 'Construct'))
+            if(method_exists($class_name, 'Init'))
             {
-                call_user_func( array( $class_name, 'Construct' ) );
+                call_user_func( array( $class_name, 'Init' ) );
             }
             
             if( method_exists( $class_name, 'Destruct' ) )

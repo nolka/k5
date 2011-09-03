@@ -31,6 +31,7 @@ class Application
     
     public function __construct($params = null)
     {
+        //echo "construct<br />";
         self::$method = self::getRequestMethod();
         $this->path = $_SERVER['REQUEST_URI'];
         
@@ -73,14 +74,13 @@ class Application
             $this->callFunc($this->beforeFunc);
             foreach($this->Requests[self::$method] as &$request)
             {
-
+                #dump($request);
                 $response = $request->Run();
                 #dump($response);
                 if($response) return $response;
             }
             $this->callFunc($this->afterFunc);
-
-            return api_error(ApiErrorCode::MethodNotSpecified, 'No method specified');
+            return api_error(ApiErrorCode::MethodNotSpecified, 'No method specified or method unknown!');
         }
         catch(Exception $e)
         {
@@ -164,7 +164,30 @@ class Application
     
     public function All($path, $callback)
     {
-        return $this->addRequest("All", $path, $callback);
+        return $this->addRequest("ALL", $path, $callback);
+    }
+    
+    /**
+     *
+     * @param string $path url path to append
+     * @param int $count request handlers count from the end, wich path been modified
+     * @param string $method request method
+     * @return bool 
+     */
+    public function AppendPath($path, $count=0, $method = null)
+    {
+        $reqMethod = $method === null? 'GET': $method;
+        $reqCount = count($this->Requests[$reqMethod]);
+        for($i = $reqCount-1; $i >= 0; $i--)
+        {
+            if($count >= 0)
+            {
+                $this->Requests[$reqMethod][$i]->Path .= $path;
+                $count--;
+            }
+            else return true;
+        }
+        return false;
     }
     
     public function Run($args = null)

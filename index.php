@@ -25,5 +25,6 @@ $app = new Application($app_params);
 #$app->Get('/', 'index');
 
 $app->LoadPlugins('System/plugins/main/');
+#dump(Application::GetInstance());
 
 $app->Run();

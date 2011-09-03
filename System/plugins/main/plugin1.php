@@ -15,18 +15,22 @@ if(!defined('PLUGIN_LOADER'))
 //    if($req->Method == "GET")
 //    {
 //        return '
-//        <form method="POST"> 
-//        <input type="hidden" name="name" value="name"/>
-//        <input type="hidden" name="value" value="value"/>
+//        <form method="POST" action="/auth/ololo/nolka/xternalx"> 
+//        <input type="text" name="name" value="'.$name.'"/>
+//        <input type="text" name="value" value="'.$value.'"/>
 //        <input type="submit">
 //        </form>
 //        ';
 //    }
 //    else
 //    {
-//        echo "<ololo>{$name} - {$value}</ololo>";
+//        return "<ololo>{$name} - {$value}</ololo>";
 //    }
 //}
+//
+//Application::GetInstance()->All('ololo/{name}/{value}', 'testfunc');
+//
+
 //
 //Application::GetInstance()->Get('ololo', 'testfunc');
 //Application::GetInstance()->Post('ololo', 'testfunc');

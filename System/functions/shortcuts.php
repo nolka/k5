@@ -74,7 +74,9 @@ function api_response($args, $tpl = null)
 {
     if($tpl === null)
     {
-        return new ApiResponse(render_to_response_str('response.xml', array_merge(array('IsError' => 0) ,$args)));
+        $dbg = debug_backtrace();
+        dump($dbg);
+        return new ApiResponse(render_to_response_str($dbg[1]['function'].'.xml', array_merge(array('IsError' => 0) ,$args)));
     }
     else
     {
