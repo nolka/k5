@@ -7,7 +7,7 @@ class Application
     private static $instance = null;
     private static $method;
     
-    private static $name = 'Authorization service';
+    private static $name = 'base app';
     private static $version = '0.3 beta';
         
     private $path;

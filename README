@@ -5,5 +5,14 @@ router - handmade bicycle
 template engine - twig
 orm - not used
 
+Example ot .htaccess file:
+RewriteEngine On
+RewriteBase /
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /index.php [QSA,L]
+
+#   end of example :)
 
 regards, xternalx aka nolka

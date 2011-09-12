@@ -193,7 +193,10 @@ class Request
             return call_user_func_array($this->Callback, $args);
         }
         
-        // если коллбэк в классе передан
+        // если в колллбэк функции присутствует точка, значит 
+        // нам передали класс и имя метода класса. Точка говорит о том,
+        // что перед двызовом функции необходимо сначала создать экземпляр
+        // класса
         if(strpos($this->Callback, "."))
         {
             $methodInfo = explode(".", $this->Callback);
@@ -205,6 +208,20 @@ class Request
                 if(method_exists($obj, $methodName))
                 {
                     return call_user_func_array(array($obj, $methodName), $args);
+                }
+            }
+        }
+        // если в коллбэке двоеточие, значит коллбэк - статический метод класса
+        if(strpos($this->Callback, ":"))
+        {
+            $methodInfo = explode(".", $this->Callback);
+            $className = $methodInfo[0];
+            $methodName = $methodInfo[1];
+            if(class_exists($className))
+            {
+                if(method_exists($className, $methodName))
+                {
+                    return call_user_func_array(array($className, $methodName), $args);
                 }
             }
         }
