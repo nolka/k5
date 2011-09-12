@@ -5,6 +5,18 @@ class Request
     public $Method;
     public $Path;
     public $Callback;
+    
+    public $Referer;
+    
+    public $IsSecureConnection;
+    
+    public $RemoteAddr;
+    public $RemoteHost;
+    public $RemotePort;
+    public $MyAddr;
+    public $MyPort;
+    public $MyProtocol;
+    
     public $Filters = array();
     
     private $data;
@@ -16,9 +28,16 @@ class Request
         $reqMethod = $method;
         $this->Method = $reqMethod;
         $this->Path = $path;
-        #dump($reqMethod.' -> '.$this->Path);
         $this->Callback = $callback;
         $this->data = Arguments::Request();
+        $this->Referer = $_SERVER['HTTP_REFERER'];
+        $this->IsSecureConnection = (bool)$_SERVER['HTTPS'];
+        $this->RemoteAddr = $_SERVER['REMOTE_ADDR'];
+        $this->RemoteHost = $_SERVER['REMOTE_HOST'];
+        $this->RemotePort = $_SERVER['REMOTE_PORT'];
+        $this->MyAddr = $_SERVER['SERVER_ADDR'];
+        $this->MyPort = $_SERVER['SERVER_PORT'];
+        $this->MyProtocol = $_SERVER['SERVER_PROTOCOL'];
                 
         if($this->Method == "ALL")
         {
