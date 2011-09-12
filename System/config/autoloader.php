@@ -1,14 +1,15 @@
 <?php
 
 $include_pathes = array(
-    '/var/www/auth/System/classes/',
-    'auth/System/classes/',
-    '../auth/System/classes/');
+    SYSROOT.'classes/'
+    );
 
 class Autoloader
 {
+    private static $exclude_classes = array("Twig");
+    
     protected static function FileExists($filename)
-    {
+    {       
         foreach (explode(PATH_SEPARATOR, get_include_path()) as $path)
         {
             if ($path && $path[strlen($path) - 1] != '/')
@@ -26,6 +27,11 @@ class Autoloader
     
     public static function Load($class_name)
     {
+        foreach(self::$exclude_classes as $exclusion)
+        {
+            if(strpos(strtolower($class_name), strtolower($exclusion)) !== false)
+                return false;
+        }
         #echo 'try to load '.$class_name.'<br />';
         if(self::FileExists('class.'.$class_name.'.php'))
         {
@@ -54,7 +60,7 @@ class Autoloader
 }
 
 set_include_path(join(PATH_SEPARATOR, array_merge($include_pathes, array(get_include_path()))));
-
 spl_autoload_register(array('Autoloader', 'Load'));
 
 ?>
+
