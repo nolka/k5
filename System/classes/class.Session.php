@@ -1,26 +1,15 @@
 <?php
 
-class Session
+class Session extends Singletone
 {
     static private $session_lifetime = '7200';
     
     private $session = null;
     private $account = null;
-    private static $instance = null;
     
     private $loginSeccessed;
     private $isLoggedIn;
     
-
-    public static function GetInstance()
-    {
-        if (self::$instance === null)
-        {
-            self::$instance = new self;
-        }
-        return self::$instance;
-    }
-
     public function __construct()
     {
         session_start();

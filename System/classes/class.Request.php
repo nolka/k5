@@ -85,7 +85,7 @@ class Request
         return $this->data;
     }
     
-    public function Run()
+    public function Run($application)
     {
         $args = array();
         

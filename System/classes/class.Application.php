@@ -31,6 +31,11 @@ class Application
     
     public function __construct($params = null)
     {
+        if(!function_exists('json_encode') || !function_exists('json_decode'))
+        {
+            throw new Exception('Json support not available! Application will now exit.');
+        }
+        
         //echo "construct<br />";
         self::$method = self::getRequestMethod();
         $this->path = $_SERVER['REQUEST_URI'];
@@ -75,7 +80,7 @@ class Application
             foreach($this->Requests[self::$method] as &$request)
             {
                 #dump($request);
-                $response = $request->Run();
+                $response = $request->Run($this);
                 #dump($response);
                 if($response) return $response;
             }
@@ -113,6 +118,11 @@ class Application
                 require_once $plugin_name;
             }
         }
+    }
+    
+    public static function GetDatabase()
+    {
+        
     }
     
     private static function getRequestMethod()
