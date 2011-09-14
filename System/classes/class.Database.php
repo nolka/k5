@@ -233,15 +233,17 @@ class Database
     }
 
     
+    
     function AsObject($class_name)
     {
         $this->fetchMode = DatabaseFetchMode::Object;
         #return 
     }
     
-    function AsArray()
+    function AsArray($what)
     {
         $this->fetchMode = DatabaseFetchMode::Assoc;
+        return $this->getItems(false, null, null);
     }
 
     public function Prepare($query_string)
