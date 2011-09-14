@@ -54,15 +54,44 @@ class Database
         }
         return $this;
     }
-    
-    public function LogAsHtml()
+
+    public function Prepare($query_string)
     {
-        return implode('<br />', $this->logMessages);
-    }
-    
-    public function LogAsText()
-    {
-        return implode("\n", $this->logMessages);
+        $this->toLog("Preparing query: ".$query_string.'; length: '.  strlen($query_string));
+        $argOffset = 1;
+        for($i=0; $i <= $this->rawQueryLen; $i++)
+        {
+            $char = $this->getNextChar();
+            if($char != '?')
+            {
+                $this->preparedQuery[] = $char;
+            }
+            else
+            {
+                $nextchar = $this->getNextChar(false);
+                if($nextchar == "i")
+                {
+                    $this->preparedQuery[] = intval($this->escape(func_get_arg($argOffset++))); 
+                    $this->getNextChar();
+                }
+                else
+                if($nextchar == "f")
+                {
+                    $this->preparedQuery[] = floatval($this->escape(func_get_arg($argOffset++)));
+                    $this->getNextChar();
+                }else
+                if($nextchar == "k")
+                {
+                    $this->preparedQuery[] = "`".($this->escape(func_get_arg($argOffset++)))."`";
+                    $this->getNextChar();
+                }
+                else
+                {
+                    $this->preparedQuery[] = "'".($this->escape(func_get_arg($argOffset++)))."'";
+                }   
+            }
+        }
+        return implode('', $this->preparedQuery);
     }
     
     function Select($what)
@@ -142,12 +171,14 @@ class Database
     }
     
     function Assoc($table_name)
-    {
+    {   
+        $this->fetchMode = DatabaseFetchMode::Assoc;
         return $this->Select("*")->From($table_name);
     }
     
     function Object($class, $constructor_args = null)
     {
+        $this->fetchMode = DatabaseFetchMode::Object;
         $this->fetchClassArgs =  $constructor_args;
         if(is_object($class))
         {
@@ -180,41 +211,41 @@ class Database
             if($one)
                 $this->Limit(1);
         }
-        $queryResult = $this->Query($this->rawQuery);
-        $dataResult = null;
+        $this->Query($this->rawQuery);
+        $this->toLog(" rows result: ".mysqli_num_rows($this->queryRes));
+        $resultData = null;
         if($this->fetchMode == DatabaseFetchMode::Assoc)
         {
             if($one)
             {
-                $dataResult = mysqli_fetch_assoc($this->queryRes);
+                $resultData = mysqli_fetch_assoc($this->queryRes);
             }
             else
             {
-                $dataResult = array();
-                while($res = mysqli_fetch_assoc($this->queryRes))
+                $resultData = array();
+                while($assoc = mysqli_fetch_assoc($this->queryRes))
                 {
-                    $dataResult[] = $res;
+                    $resultData[] = $assoc;
                 }
             }
-            $this->toLog(json_encode($dataResult));
         }
         else
         {
             if($one)
             {
-                $dataResult = mysqli_fetch_object($this->queryRes, $this->fetchClass, $this->fetchClassArgs);
+                $resultData = mysqli_fetch_object($this->queryRes, $this->fetchClass, $this->fetchClassArgs);
             }
             else
             {
-                $dataResult = array();
-                while($res = mysqli_fetch_object($this->queryRes, $this->fetchClass, $this->fetchClassArgs));
-                {
-                    $dataResult[] = $res;
-                }
+                $resultData = array();
+                while($resultData[] = mysqli_fetch_object($this->queryRes, $this->fetchClass, $this->fetchClassArgs));
+                {}
             }
-            $this->toLog(json_encode($dataResult));
         }
-        return $dataResult;
+        
+        $this->toLog(json_encode($resultData));
+        $this->clean();
+        return $resultData;
     }
     
     function First($order_by = null)
@@ -232,62 +263,23 @@ class Database
         return $this->getItems(false, null, ($order_by === null)? null:$this->escape($order_by));
     }
 
-    
-    
     function AsObject($class_name)
     {
         $this->fetchMode = DatabaseFetchMode::Object;
         #return 
     }
     
-    function AsArray($what)
+    function AsArray()
     {
         $this->fetchMode = DatabaseFetchMode::Assoc;
         return $this->getItems(false, null, null);
     }
-
-    public function Prepare($query_string)
-    {
-        $this->toLog("Preparing query: ".$query_string.'; length: '.  strlen($query_string));
-        $argOffset = 1;
-        for($i=0; $i <= $this->rawQueryLen; $i++)
-        {
-            $char = $this->getNextChar();
-            if($char != '?')
-            {
-                $this->preparedQuery[] = $char;
-            }
-            else
-            {
-                $nextchar = $this->getNextChar(false);
-                if($nextchar == "i")
-                {
-                    $this->preparedQuery[] = intval($this->escape(func_get_arg($argOffset++))); 
-                    $this->getNextChar();
-                }
-                else
-                if($nextchar == "f")
-                {
-                    $this->preparedQuery[] = floatval($this->escape(func_get_arg($argOffset++)));
-                    $this->getNextChar();
-                }else
-                if($nextchar == "k")
-                {
-                    $this->preparedQuery[] = "`".($this->escape(func_get_arg($argOffset++)))."`";
-                    $this->getNextChar();
-                }
-                else
-                {
-                    $this->preparedQuery[] = "'".($this->escape(func_get_arg($argOffset++)))."'";
-                }   
-            }
-        }
-        return implode('', $this->preparedQuery);
-    }
     
-    private function toLog($message)
+    function AsVar($what)
     {
-        $this->logMessages[] = $message;
+        $result = $this->AsArray();
+        $this->toLog($result[$what]);
+        return $result[$what];
     }
     
     private function escape($value)
@@ -321,6 +313,21 @@ class Database
         }
     }
     
+    public function LogAsHtml()
+    {
+        return implode('<br />', $this->logMessages);
+    }
+    
+    public function LogAsText()
+    {
+        return implode("\n", $this->logMessages);
+    }
+    
+    private function toLog($message)
+    {
+        $this->logMessages[] = $message;
+    }
+    
     public function SetCharset($charset = 'utf8')
     {
         mysqli_set_charset($this->res, $charset);
@@ -339,6 +346,12 @@ class Database
     public function FieldsCount()
     {
         return mysqli_field_count($this->res);
+    }
+    
+    private function clean()
+    {
+        mysqli_free_result($this->queryRes);
+        $this->queryRes = null;
     }
     
     public function Close()
