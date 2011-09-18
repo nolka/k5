@@ -1,4 +1,5 @@
 hi!
+====
 this is a simple xternalx engine skeleton
 
 router - handmade bicycle
@@ -6,6 +7,7 @@ template engine - twig
 orm - not used
 
 Example ot .htaccess file:
+===========================
 RewriteEngine On
 RewriteBase /
 
@@ -15,4 +17,6 @@ RewriteRule ^(.*)$ /index.php [QSA,L]
 
 #   end of example :)
 
+
 regards, xternalx aka nolka
+http://xternalx.com

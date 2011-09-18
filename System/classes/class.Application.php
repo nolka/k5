@@ -85,7 +85,7 @@ class Application
                 if($response) return $response;
             }
             $this->callFunc($this->afterFunc);
-            return api_error(ApiErrorCode::MethodNotSpecified, 'No method specified or method unknown!');
+            return render_to_response(array('Code' => 404, 'Message' => 'Page not found!'), 'error');
         }
         catch(Exception $e)
         {

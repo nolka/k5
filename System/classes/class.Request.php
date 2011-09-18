@@ -30,10 +30,10 @@ class Request
         $this->Path = $path;
         $this->Callback = $callback;
         $this->data = Arguments::Request();
-        $this->Referer = $_SERVER['HTTP_REFERER'];
-        $this->IsSecureConnection = (bool)$_SERVER['HTTPS'];
+        $this->Referer = isset($_SERVER['HTTP_REFERER'])? $_SERVER['HTTP_REFERER']: null;
+        $this->IsSecureConnection = isset($_SERVER['HTTPS'])? (bool)$_SERVER['HTTPS']: false;
         $this->RemoteAddr = $_SERVER['REMOTE_ADDR'];
-        $this->RemoteHost = $_SERVER['REMOTE_HOST'];
+        $this->RemoteHost = isset($_SERVER['REMOTE_HOST'])? $_SERVER['REMOTE_HOST']: null;
         $this->RemotePort = $_SERVER['REMOTE_PORT'];
         $this->MyAddr = $_SERVER['SERVER_ADDR'];
         $this->MyPort = $_SERVER['SERVER_PORT'];

@@ -9,22 +9,22 @@ include ROOT.'/System/config/config.php';
 
 function index($req)
 {
-    return "ololo";
+    return render_to_response(array('what?'));
 }
 
 
 $app_params = array(
     'root' => ROOT,
-    'url_root' => '/auth/',
-    'template' => SYSROOT.'templates/api/xml/'
+    'url_root' => '/k5/',
+    'template' => SYSROOT.'templates/'
 );
 
 
 $app = new Application($app_params);
 
-#$app->Get('/', 'index');
+$app->Get('', 'index');
 
 $app->LoadPlugins('System/plugins/main/');
-#dump(Application::GetInstance());
+dump(Application::GetInstance());
 
 $app->Run();

@@ -63,4 +63,3 @@ set_include_path(join(PATH_SEPARATOR, array_merge($include_pathes, array(get_inc
 spl_autoload_register(array('Autoloader', 'Load'));
 
 ?>
-
