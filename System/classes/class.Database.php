@@ -27,10 +27,10 @@ class Database
     
     public function __construct($username, $password, $dbname, $host = 'localhost')
     {
-        $this->res = mysqli_connect($host, $username, $password, $dbname);
-        if(mysqli_error($this->res))
+        $this->res = @mysqli_connect($host, $username, $password, $dbname);
+        if(mysqli_connect_error())
         {
-            throw new DatabaseConnectionException("Error occurred when i try to connect to database: (".mysqli_errno($this->res).") ".mysqli_error($this->res));
+            throw new DatabaseConnectionException("Error occurred when i try to connect to database: (".mysqli_connect_errno().") ".mysqli_connect_error());
         }
         
     }
@@ -352,6 +352,9 @@ class Database
     {
         mysqli_free_result($this->queryRes);
         $this->queryRes = null;
+        $this->rawQuery = null;
+        $this->preparedQuery = null;
+        $this->rawQueryLen = 0;
     }
     
     public function Close()

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Response IsError="0">
-{% if Info %}<Info>{{ Info }}</Info>{% endif %}
-{% if Account %}<Account>{{ Account }}</Account>{% endif %}
-{% if Description %}<Description>{{ Description }}</Description>{% endif %}
-{% if Hash %}<SessionId>{{ Hash }}</SessionId>{% endif %}
-{% if LoggedOut %}<Result>1</Result>{% endif %}
-
-</Response>

@@ -9,13 +9,10 @@ class SystemConfig
     {
         try
         {
-            $sql = new MySQL();
-            if(isset($params['db_error_handler']))
-                $sql->SetErrorHandler($params['db_error_handler']);
-            $sql->Connect($params['db_host'],$params['db_user'],$params['db_password'],$params['db_db']);
+            $sql = new Database($params['db_user'],$params['db_password'], $params['db_db']);
             if($sql)
             {
-                $sql->SetEncoding("utf8");
+                $sql->SetCharset("utf8");
 //                $sql->Query("SELECT * FROM `SystemConfig` ORDER BY `s_param` ASC");
 //                while($r = $sql->Assoc())
 //                {
@@ -26,12 +23,12 @@ class SystemConfig
             }
             else
             {
-                echo '<error>Error initializing SystemConfig</error>';
+                throw new Exception('Error initializing SystemConfig');
             }
         }
         catch(Exception $e)
         {
-            echo '<error>Exception in SystemConfig</error>';
+            throw new Exception('Exception in SystemConfig '.$e->getMessage());
         }
     }
     

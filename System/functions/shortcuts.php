@@ -64,29 +64,36 @@ function render_to_response_str($template, $args)
     return $templateRenderer->render($args);
 }
 
-
-function render_to_response($template, $args)
+function render_to_response($args, $tpl = null)
 {
-    return new ApiResponse(render_to_response_str($template, $args));
+    if($tpl === null)
+    {
+        $dbg = debug_backtrace();
+        #dump($dbg);
+        return new ApiResponse(render_to_response_str('func_'.$dbg[1]['function'].'.tpl', array_merge(array('IsError' => 0) ,$args)));
+    }
+    else
+    {
+        return new ApiResponse(render_to_response_str($tpl.'.tpl', array_merge(array('IsError' => 0) ,$args)));
+    }
 }
 
+function api_error($code, $message, $args = array())
+{
+    return render_to_response(array_merge(array('Code' => $code, 'Message' => $message), $args), 'error');
+}
 function api_response($args, $tpl = null)
 {
     if($tpl === null)
     {
         $dbg = debug_backtrace();
         #dump($dbg);
-        return new ApiResponse(render_to_response_str('func_'.$dbg[1]['function'].'.xml', array_merge(array('IsError' => 0) ,$args)));
+        return new ApiResponse(render_to_response_str('func_'.$dbg[1]['function'].'.tpl', array_merge(array('IsError' => 0) ,$args)));
     }
     else
     {
-        return new ApiResponse(render_to_response_str($tpl.'.xml', array_merge(array('IsError' => 0) ,$args)));
+        return new ApiResponse(render_to_response_str($tpl.'.tpl', array_merge(array('IsError' => 0) ,$args)));
     }
-}
-
-function api_error($code, $message, $args = array())
-{
-    return render_to_response('error.xml', array_merge(array('Code' => $code, 'Message' => $message), $args));
 }
 
 function encrypt($str, $key)
