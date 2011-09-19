@@ -22,9 +22,13 @@ $app_params = array(
 
 $app = new Application($app_params);
 
+<<<<<<< HEAD
 $app->Get('/what', 'index');
+=======
+$app->Get('', 'index');
+>>>>>>> 07529073371bf7b92796700336443aac03368605
 
 $app->LoadPlugins('System/plugins/main/');
-#dump(Application::GetInstance());
+dump(Application::GetInstance());
 
 $app->Run();
